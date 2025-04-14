@@ -9,30 +9,19 @@ import java.util.regex.Pattern;
 
 public class ItemParser {
     private String parsedValue;
+    private int errorCounter;
 
-    public List<Item> parseItemList(String valueToParse) throws ItemParseException {
+    public List<Item> parseItemList(String valueToParse) {
         List<Item> list = new ArrayList<>();
-//        Pattern separateKeyAndValue = Pattern.compile("[:@^%*]", Pattern.CASE_INSENSITIVE);
-//        Matcher matcher = separateKeyAndValue.matcher(valueToParse);
-
         String[] splitValues = valueToParse.split("##");
 
     for (String value : splitValues) {
-//        if (!valueToParse.contains("[:@^%*]") || !valueToParse.contains(";")|| !matcher.find()) {
-//            throw new ItemParseException();
-//        }
-list.add(parseSingleItem(value));
+        try {
+            list.add(parseSingleItem(value));
+        } catch (ItemParseException e) {
+            errorCounter++;
+        }
     }
-//        for (String value : splitValues) {
-////            if (!valueToParse.contains("[:@^%*]") || !valueToParse.contains(";")) {
-////                throw new ItemParseException();
-////            }
-//            list.add(parseSingleItem(value));
-//        }
-        //loop through the given string
-        //separate it into objects and key value pairs
-        //any key missing a value should throw and excpetion.
-        //add item to list.
 
         return list;
     }
@@ -55,10 +44,11 @@ list.add(parseSingleItem(value));
                 String[] keyValue = pair.split("[:@^%*]", 2);
                 if (keyValue.length != 2 || keyValue[0] == null || keyValue[1] == null || keyValue[0].trim().isEmpty() || keyValue[1].trim().isEmpty()) {
                     throw new ItemParseException();
+                } else {
+                    String key = keyValue[0].trim().toLowerCase();
+                    String value = keyValue[1].trim().toLowerCase();
+                    map.put(key, value);
                 }
-                String key = keyValue[0].trim().toLowerCase();
-                String value = keyValue[1].trim().toLowerCase();
-                map.put(key, value);
             }
 
 //        for (String key : map.keySet()) {
