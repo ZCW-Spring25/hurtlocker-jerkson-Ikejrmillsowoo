@@ -19,7 +19,7 @@ public class ItemParser {
         try {
             list.add(parseSingleItem(value));
         } catch (ItemParseException e) {
-            errorCounter++;
+            this.errorCounter++;
         }
     }
 
@@ -29,34 +29,36 @@ public class ItemParser {
     public Item parseSingleItem(String singleItem) throws ItemParseException {
 
         Map<String, String> map = new HashMap<>();
-        Pattern separateKeyAndValue = Pattern.compile("[:@^%*]", Pattern.CASE_INSENSITIVE);
-        Pattern separateKeyValue = Pattern.compile(";");
-        Pattern separateObjects = Pattern.compile("##");
-        Matcher matchObjects = separateKeyAndValue.matcher(singleItem);
-        Matcher matchObjects1 = separateKeyValue.matcher(singleItem);
-        Matcher matchObjects2 = separateObjects.matcher(singleItem);
+        Pattern splitObj = Pattern.compile("[:@^%*]");
 
 
-        String stripped = (matchObjects1.replaceAll(" ").replace("##", " "));
-        String[] pairs = stripped.split(" ");
+        String stripped = (singleItem.replaceAll("##", " ").replace(";", " "));
+        String[] pairs = stripped.split("\\s+");
 
             for (String pair : pairs) {
-                String[] keyValue = pair.split("[:@^%*]", 2);
-                if (keyValue.length != 2 || keyValue[0] == null || keyValue[1] == null || keyValue[0].trim().isEmpty() || keyValue[1].trim().isEmpty()) {
+                if (pair.trim().isEmpty()) continue;
+                Matcher matchSplit = splitObj.matcher(pair);
+                if (matchSplit.find()) {
+                    String[] keyValue = pair.split("[:@^%*]", 2);
+                    if (keyValue.length != 2 || keyValue[0] == null || keyValue[1] == null || keyValue[0].trim().isEmpty() || keyValue[1].trim().isEmpty()) {
+                        throw new ItemParseException();
+                    }
+
+                        String key = keyValue[0].trim().toLowerCase();
+                        String value = keyValue[1].trim().toLowerCase();
+                        map.put(key, value);
+                    } else {
                     throw new ItemParseException();
-                } else {
-                    String key = keyValue[0].trim().toLowerCase();
-                    String value = keyValue[1].trim().toLowerCase();
-                    map.put(key, value);
                 }
             }
 
 //        for (String key : map.keySet()) {
 //            System.out.println(key + "=" + map.get(key));
 //        }
-
-        Item item = new Item(map.get("name"), Double.parseDouble(map.get("price")), map.get("type"), map.get("expiration"));
-
-        return item;
+try {
+   return new Item(map.get("name"), Double.parseDouble(map.get("price")), map.get("type"), map.get("expiration"));
+} catch (Exception e){
+    throw new ItemParseException();
+}
     }
 }
