@@ -8,7 +8,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class ItemParser {
-    private String parsedValue;
+
     private int errorCounter;
 
     public List<Item> parseItemList(String valueToParse) {
@@ -52,9 +52,7 @@ public class ItemParser {
                 }
             }
 
-//        for (String key : map.keySet()) {
-//            System.out.println(key + "=" + map.get(key));
-//        }
+
 try {
    return new Item(map.get("name"), Double.parseDouble(map.get("price")), map.get("type"), map.get("expiration"));
 } catch (Exception e){

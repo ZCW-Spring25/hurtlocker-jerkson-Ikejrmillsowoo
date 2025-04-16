@@ -3,8 +3,11 @@ package io.zipcoder;
 
 import io.zipcoder.utils.FileReader;
 import io.zipcoder.utils.Item;
+import io.zipcoder.utils.ItemParseException;
 
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class GroceryReporter {
     private final String originalFileText;
@@ -12,6 +15,8 @@ public class GroceryReporter {
     Map<String, String> map = new HashMap<>();
     Map<String, Integer> trackingMap = new HashMap<>();
     String[] things;
+    Pattern pattern = Pattern.compile("[:@^%*]");
+
 
     public GroceryReporter(String jerksonFileName) {
         this.originalFileText = FileReader.readFile(jerksonFileName);
@@ -21,14 +26,17 @@ public class GroceryReporter {
         ItemParser parser = new ItemParser();
         List<Item> listOfStrings = new ArrayList<>(parser.parseItemList(this.originalFileText));
         for (Item list: listOfStrings) {
-            System.out.println(listOfStrings);
             String[] listItem = list.toString().split(" ");
+
             for (String itemStr : listItem) {
-                this.things = (itemStr.split(":"));
+                Matcher matcher = pattern.matcher(itemStr);
+                if (matcher.find()){
+                        this.things = (itemStr.split(":"));
+                }
 
             }
-        }
-       // System.out.println(this.things[0] + this.things[1]);
+        }System.out.println("here" + Arrays.toString(this.things));
+        System.out.println(this.things[0] + this.things[1]);
     }
 // will post item name and item in map and then use same keys to map on trackingMap
     // call each map for the string processing
@@ -79,7 +87,7 @@ public class GroceryReporter {
                     "Price:  " + map.get("price") + "\t\t seen:  " + tracking.get("name") + "   times");
         }
 
-        System.out.println(answer);
+        System.out.println("Answer" + answer);
         return answer;
     }
 }
