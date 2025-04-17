@@ -29,7 +29,7 @@ public class ItemParser {
     public Item parseSingleItem(String singleItem) throws ItemParseException {
 
         Map<String, String> map = new HashMap<>();
-        Pattern splitObj = Pattern.compile("[:@^%*]");
+        Pattern splitObj = Pattern.compile("[:@^%*!]");
 
 
         String stripped = (singleItem.replaceAll("##", " ").replace(";", " "));
@@ -39,7 +39,7 @@ public class ItemParser {
                 if (pair.trim().isEmpty()) continue;
                 Matcher matchSplit = splitObj.matcher(pair);
                 if (matchSplit.find()) {
-                    String[] keyValue = pair.split("[:@^%*]", 2);
+                    String[] keyValue = pair.split("[:@^%*!]", 2);
                     if (keyValue.length != 2 || keyValue[0] == null || keyValue[1] == null || keyValue[0].trim().isEmpty() || keyValue[1].trim().isEmpty()) {
                         throw new ItemParseException();
                     }

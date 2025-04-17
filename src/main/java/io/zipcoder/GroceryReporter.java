@@ -14,8 +14,8 @@ public class GroceryReporter {
 
     Map<String, String> map = new HashMap<>();
     Map<String, Integer> trackingMap = new HashMap<>();
-    String[] things;
-    Pattern pattern = Pattern.compile("[:@^%*]");
+    List <String[]> things = new ArrayList<>();
+    Pattern pattern = Pattern.compile("[:@^%*!]");
 
 
     public GroceryReporter(String jerksonFileName) {
@@ -27,16 +27,19 @@ public class GroceryReporter {
         List<Item> listOfStrings = new ArrayList<>(parser.parseItemList(this.originalFileText));
         for (Item list: listOfStrings) {
             String[] listItem = list.toString().split(" ");
-
+//work here
             for (String itemStr : listItem) {
                 Matcher matcher = pattern.matcher(itemStr);
-                if (matcher.find()){
-                        this.things = (itemStr.split(":"));
+
+                if (!matcher.matches()){
+                    String[] arr = itemStr.split(":");
+                        this.things.add(arr);
                 }
 
             }
-        }System.out.println("here" + Arrays.toString(this.things));
-        System.out.println(this.things[0] + this.things[1]);
+        }
+//        System.out.println("here" + this.things);
+//        System.out.println("ope" +this.things.get(0) + this.things.get(1));
     }
 // will post item name and item in map and then use same keys to map on trackingMap
     // call each map for the string processing
@@ -45,36 +48,46 @@ public class GroceryReporter {
         int countName = 1;
         int countPrice = 1;
         parseList();
-       // ItemParser parser = new ItemParser();
-        //List<Item> listOfStrings = new ArrayList<>(parser.parseItemList(this.originalFileText));
-       // for (Item list: listOfStrings) {
-         //   String[] listItem = list.toString().split(" ");
-          //  for (String itemStr : listItem) {
-                //String[] things = (itemStr.split(":"));
 
+        for (String[] thing: things){
+            //System.out.println(things.size());
+            //String[] newThingPair = thing.replaceAll(" ","").split(",");
+            System.out.println(Arrays.toString(thing));
+          //  for (int i = 0; i < thing.size(); i++) {
+            try{
+                if (thing.length == 2) {
+                    String key = thing[0].toLowerCase();
+                    String value = thing[1];
 
-                if (things[0].equals("name")) {
-                    map.put(things[0], things[1]);
-                    countName++;
-                    trackingMap.put(things[0], countName);
+                    if (key.equals("name")) {
+                        map.put(key, value);
+                        trackingMap.put(key, countName++);
+                    }
+                    if (key.equals("price")) {
+                        map.put(key, value);
+                        trackingMap.put(key, countPrice++);
+                    }
                 }
-                if (things[0].equals("price")) {
-                    map.put(things[0], things[1]);
-                    countPrice++;
-                    trackingMap.put(things[0], countPrice);
-                }
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+
+
+        }
 
 
 
 
-       // System.out.println(map.toString());
-        //System.out.println(trackingMap.toString());
+
+        //System.out.println(map);
+       // System.out.println(trackingMap);
         //stringFormatter(map, trackingMap);
         return stringFormatter(map, trackingMap);
     }
 
 
     public String stringFormatter(Map map, Map tracking) {
+
         String answer ="";
 
         for (int i = 0; i < map.size(); i++) {
